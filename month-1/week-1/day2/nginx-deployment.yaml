@@ -1,0 +1,20 @@
+# nginx-deployment.yaml
+apiVersion: apps/v1  # 注意：Deployment 的 apiVersion 是 apps/v1
+kind: Deployment
+metadata:
+  name: my-nginx-deployment
+spec:
+  replicas: 3 # 期望的 Pod 副本数量
+  selector: # 选择器，告诉 Deployment 要管理哪些 Pod
+    matchLabels:
+      app: my-nginx
+  template: # Pod 模板，这部分和我们昨天写的 Pod YAML 几乎一样
+    metadata:
+      labels: # Pod 的标签，必须和上面的 selector.matchLabels 一致
+        app: my-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.24 # 我们先用 1.24 版本
+        ports:
+        - containerPort: 80
