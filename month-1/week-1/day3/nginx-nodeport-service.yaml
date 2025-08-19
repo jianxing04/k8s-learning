@@ -1,0 +1,14 @@
+# nginx-nodeport-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nginx-nodeport
+spec:
+  type: NodePort # **关键**：明确指定类型为 NodePort
+  selector:
+    app: my-nginx
+  ports:
+    - protocol: TCP
+      port: 80 # Service 在集群内部的端口
+      targetPort: 80 # Pod 的目标端口
+      # nodePort: 30007 # 可以指定一个端口，如果省略，会自动分配一个

@@ -1,0 +1,13 @@
+# nginx-clusterip-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nginx-clusterip
+spec:
+  # type: ClusterIP  # 这是默认类型，可以不写
+  selector:
+    app: my-nginx # **关键**：这个 selector 必须和 Deployment 中 Pod 的 label 完全一致
+  ports:
+    - protocol: TCP
+      port: 80 # Service 自身暴露的端口
+      targetPort: 80 # 流量要转发到的目标 Pod 上的端口
