@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+  annotations:
+    # 这个注解很重要，它告诉 Nginx Ingress Controller 如何重写路径
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: "myapp.local" # 我们要匹配的域名
+    http:
+      paths:
+      - path: /nginx # 我们要匹配的路径
+        pathType: Prefix # 路径匹配类型：前缀匹配
+        backend:
+          service:
+            name: my-nginx-service # 要转发到的 Service 名称
+            port:
+              number: 80 # Service 暴露的端口

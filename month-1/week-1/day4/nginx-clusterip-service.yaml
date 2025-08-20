@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nginx-service # 为了清晰，改个名
+spec:
+  type: ClusterIP
+  selector:
+    app: my-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

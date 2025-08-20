@@ -1,0 +1,80 @@
+# test-ingress.yaml
+
+# ------------------- #
+#      Deployment     #
+# ------------------- #
+# 创建一个简单的Web服务器Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+      - name: hello-world-container
+        # 使用一个Google提供的，非常小且可靠的测试镜像
+        image: gcr.io/google-samples/hello-app:1.0
+        ports:
+        - containerPort: 8080
+
+---
+
+# ------------------- #
+#        Service      #
+# ------------------- #
+# 为上面的Deployment创建一个ClusterIP类型的服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-service
+spec:
+  # 这个selector必须匹配Deployment模板中的labels
+  selector:
+    app: hello-world
+  ports:
+    - protocol: TCP
+      # Service暴露在集群内部的端口
+      port: 80
+      # 流量要转发到的Pod的目标端口
+      targetPort: 8080
+  # ClusterIP是默认类型，只在集群内部可见
+  type: ClusterIP
+
+---
+
+# ------------------- #
+#       Ingress       #
+# ------------------- #
+# 创建Ingress规则，将外部流量导向Service
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-world-ingress
+  annotations:
+    # 这个注解对于Nginx Ingress Controller很常见，确保路径正确
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  # 指定要使用的Ingress Controller，minikube默认是nginx
+  ingressClassName: nginx
+  rules:
+  # 你可以自定义域名，这里用一个测试域名
+  - host: "hello-world.test"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            # 必须匹配上面Service的名称
+            name: hello-world-service
+            port:
+              # 必须匹配上面Service暴露的端口
+              number: 80
