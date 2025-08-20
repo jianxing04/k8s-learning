@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-app-ingress
+  annotations:
+    # 这个注解很重要，它告诉 Nginx Ingress Controller 如何重写路径
+    # 将 /app/some/path 重写为 /some/path 发送给后端
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - host: "web.local"
+    http:
+      paths:
+      # (.*) 是一个正则表达式，捕获 /app/ 后面的所有内容
+      - path: /app(/|$)(.*)
+        pathType: ImplementationSpecific # 使用正则表达式需要这个类型
+        backend:
+          service:
+            name: web-echo-service # **关键**: 指向我们上一步创建的 Service
+            port:
+              number: 80 # 指向 Service 的 80 端口

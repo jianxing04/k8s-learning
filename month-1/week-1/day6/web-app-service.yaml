@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-echo-service
+spec:
+  type: ClusterIP # Ingress 的后端通常是 ClusterIP
+  selector:
+    app: web-echo # **关键**: 这个选择器必须匹配 Deployment 创建的 Pod 标签
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80 # Service 自己暴露的端口
+    targetPort: 5678 # 转发到 Pod 的 5678 端口

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-echo-deployment
+spec:
+  replicas: 2 # 我们运行 2 个副本以验证负载均衡
+  selector:
+    matchLabels:
+      app: web-echo
+  template:
+    metadata:
+      labels:
+        app: web-echo
+        version: v2 # 给 Pod 打上版本标签
+    spec:
+      containers:
+      - name: app
+        image: hashicorp/http-echo:0.2.3
+        args: # 通过 args 传递启动参数
+        - "-text=VERSION 2 - Hello from Kubernetes!"
+        ports:
+        - containerPort: 5678 # http-echo 默认监听 5678 端口
