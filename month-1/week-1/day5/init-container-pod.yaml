@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod-with-init
+spec:
+  # Init Containers 在这里定义
+  initContainers:
+  - name: wait-for-service
+    image: busybox:1.35
+    # 这个 shell 命令会一直尝试 nslookup，直到成功解析 dummy-service
+    command: ['sh', '-c', 'until nslookup dummy-service; do echo waiting for dummy-service; sleep 2; done;']
+
+  # 主容器在这里定义
+  containers:
+  - name: main-app
+    image: nginx:1.24
+    ports:
+    - containerPort: 80
