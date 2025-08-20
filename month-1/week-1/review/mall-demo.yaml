@@ -1,0 +1,120 @@
+# ======================
+# Deployment: user-service
+# ======================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-deployment
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3   # 保留 3 个版本，方便回退
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      initContainers:
+        - name: init-check-db
+          image: busybox
+          command: ['sh', '-c', 'echo "Waiting for database..."; sleep 5']
+      containers:
+        - name: user-app
+          image: nginx:1.21   # 假装是用户服务
+          ports:
+            - containerPort: 80
+---
+# Service: user-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+---
+# ======================
+# Deployment: product-service
+# ======================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-deployment
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      initContainers:
+        - name: init-check-cache
+          image: busybox
+          command: ['sh', '-c', 'echo "Checking cache server..."; sleep 5']
+      containers:
+        - name: product-app
+          image: httpd:2.4   # 假装是商品服务
+          ports:
+            - containerPort: 80
+---
+# Service: product-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+---
+# ======================
+# Ingress: mall-ingress
+# ======================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mall-ingress
+spec:
+  rules:
+    - host: mall.local
+      http:
+        paths:
+          - path: /user
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 80
+          - path: /product
+            pathType: Prefix
+            backend:
+              service:
+                name: product-service
+                port:
+                  number: 80
