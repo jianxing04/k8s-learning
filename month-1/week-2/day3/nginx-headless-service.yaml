@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc # 这个名字很重要，StatefulSet 会引用它
+spec:
+  clusterIP: None # <-- 关键！这让它成为一个 Headless Service
+  selector:
+    app: nginx-sts # 匹配将由 StatefulSet 创建的 Pod
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
