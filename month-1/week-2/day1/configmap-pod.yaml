@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: configmap-env-pod
+spec:
+  containers:
+  - name: my-app
+    image: busybox:1.35
+    # 持续打印环境变量 APP_ENV 的值
+    command: [ "sh", "-c", "while true; do echo Running in environment: $APP_ENV; sleep 5; done" ]
+    env:
+      # 定义一个环境变量
+      - name: APP_ENV
+        valueFrom: # 值来源于...
+          configMapKeyRef: # 一个对 ConfigMap key 的引用
+            name: app-config # ConfigMap 的名字
+            key: APP_ENV    # ConfigMap 中的 key
+  restartPolicy: Never # 方便我们查看日志后 Pod 自动退出
