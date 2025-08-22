@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nodeselector-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+  # --- 关键部分 ---
+  nodeSelector:
+    disktype: hdd

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nodeaffinity-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+  # --- 关键部分 ---
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution: # 硬亲和性
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: disktype
+            operator: In # 操作符：In (值在列表中)
+            values:
+            - ssd
+            - nvme
