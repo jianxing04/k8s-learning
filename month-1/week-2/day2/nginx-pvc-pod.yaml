@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pvc-pod
+spec:
+  volumes:
+    # 定义一个 Volume，它的类型是 PVC
+    - name: nginx-storage
+      persistentVolumeClaim:
+        claimName: my-nginx-pvc # 引用我们上一步创建的 PVC
+  containers:
+  - name: nginx
+    image: nginx:1.24
+    ports:
+    - containerPort: 80
+    # 将这个 Volume 挂载到 Nginx 的网站根目录
+    volumeMounts:
+    - name: nginx-storage
+      mountPath: /usr/share/nginx/html

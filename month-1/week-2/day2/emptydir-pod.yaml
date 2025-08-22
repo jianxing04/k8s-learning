@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: emptydir-demo-pod
+spec:
+  # 1. 在 Pod 层面定义一个 emptyDir 类型的 Volume
+  volumes:
+  - name: shared-data
+    emptyDir: {}
+
+  containers:
+  # 2. 第一个容器：写入者
+  - name: writer
+    image: busybox:1.35
+    command: ["/bin/sh", "-c", "while true; do echo $(date) > /data/time.txt; sleep 1; done"]
+    # 3. 将 Volume 挂载到容器的 /data 目录
+    volumeMounts:
+    - name: shared-data
+      mountPath: /data
+
+  # 4. 第二个容器：读取者
+  - name: reader
+    image: busybox:1.35
+    command: ["/bin/sh", "-c", "while true; do cat /data/time.txt; sleep 1; done"]
+    # 5. 将同一个 Volume 也挂载到自己的 /data 目录
+    volumeMounts:
+    - name: shared-data
+      mountPath: /data

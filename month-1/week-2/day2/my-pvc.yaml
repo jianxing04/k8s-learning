@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-nginx-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce # 申请的读写模式：单节点读写
+  resources:
+    requests:
+      storage: 1Gi # 申请的存储空间大小：1 GiB
+  # storageClassName: standard # 在 Minikube 中可以不写，它会使用默认的
