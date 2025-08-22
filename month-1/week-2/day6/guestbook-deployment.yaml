@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guestbook-deployment
+spec:
+  replicas: 2 # 启动2个副本
+  selector:
+    matchLabels:
+      app: guestbook
+  template:
+    metadata:
+      labels:
+        app: guestbook
+    spec:
+      containers:
+      - name: app
+        image: us-docker.pkg.dev/google-samples/containers/gke/gb-frontend:v4 # Google 官方示例镜像
+        env:
+        - name: "GET_HOSTS_FROM"
+          value: "dns"
+        - name: "REDIS_MASTER_SERVICE_HOST"
+          value: "redis-svc.default.svc.cluster.local" # 通过 Headless Service DNS 连接 Redis
+        # 从 ConfigMap 注入所有配置为环境变量
+        envFrom:
+        - configMapRef:
+            name: guestbook-config
+        resources: # **为 HPA 设置 requests**
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        ports:
+        - containerPort: 80

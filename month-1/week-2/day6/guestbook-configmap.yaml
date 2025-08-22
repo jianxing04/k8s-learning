@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: guestbook-config
+data:
+  GREETING_MESSAGE: "Welcome to the K8s Guestbook!"
+  APP_MODE: "production"
