@@ -1,0 +1,26 @@
+# backend-policy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-policy
+spec:
+  # 1. Select the pods this policy applies to
+  podSelector:
+    matchLabels:
+      app: backend
+  
+  # 2. Define the types of rules included in this policy
+  policyTypes:
+  - Ingress
+
+  # 3. List the actual ingress (incoming) rules
+  ingress:
+  - from:
+    # Allow traffic from pods with this label
+    - podSelector:
+        matchLabels:
+          app: frontend
+    # You could also specify ports to allow traffic only to a specific port
+    ports:
+    - protocol: TCP
+      port: 80
