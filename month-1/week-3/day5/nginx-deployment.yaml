@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-nginx
+  template:
+    metadata:
+      labels:
+        app: my-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21
+        # 添加资源请求，让 K8s 更好地调度，并让 top 命令显示更准确
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "50Mi"
