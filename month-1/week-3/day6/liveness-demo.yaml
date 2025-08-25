@@ -1,0 +1,19 @@
+# liveness-demo.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: liveness-pod
+spec:
+  containers:
+  - name: healthcheck-app
+    image: agrimmer/go-http-healthcheck
+    ports:
+    - containerPort: 8080
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 8080
+      # K8s 第一次探测前等 5 秒
+      initialDelaySeconds: 5
+      # 每 5 秒探测一次
+      periodSeconds: 5
