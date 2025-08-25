@@ -1,0 +1,28 @@
+# my-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+  annotations:
+    # 这一行对于 Nginx Ingress Controller 很重要，它能更好地处理路径重写
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  # 我们这里不指定 host，Ingress Controller 将会为所有指向其 IP 的请求应用此规则
+  # 这种方式在 minikube 环境下最简单
+  - http:
+      paths:
+      - path: /app1
+        pathType: Prefix
+        backend:
+          service:
+            name: app1-service
+            port:
+              number: 80
+      - path: /app2
+        pathType: Prefix
+        backend:
+          service:
+            name: app2-service
+            port:
+              number: 80
